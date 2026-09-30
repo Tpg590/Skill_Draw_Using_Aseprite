@@ -15,8 +15,15 @@ Kỹ năng này quy định cách phân chia và tổ chức tập tin trong kh�
 Skill_Trainning/
 ├── .agents/
 │   ├── rules/
-│   │   ├── pixel_art_rules.md         # Quy tắc mỹ thuật & cấm kỵ cốt lõi
-│   │   └── pixel_art_physics_rules.md # Quy tắc vật lý, quang học & hoạt họa N frame
+│   │   ├── pixel_art_rules.md                 # Quy tắc mỹ thuật & cấm kỵ cốt lõi
+│   │   ├── 2D_physics_spatial_perspective.md  # Quy tắc hình học 3D, nan trụ & góc 3/4
+│   │   ├── 2D_physics_optics_lighting.md      # Quy tắc quang học, hắt sáng & phản quang
+│   │   ├── 2D_physics_kinematics_motion.md    # Quy tắc động lực học, mắt xích, bóng trục Z
+│   │   ├── 2D_physics_impact_mechanics.md     # Quy tắc va chạm sàn, đàn hồi & bản lề
+│   │   ├── 2D_physics_material_rendering.md   # Quy tắc chất liệu, tán xạ SSS & nếp rủ
+│   │   ├── 2D_physics_fluid_gas_vfx.md        # Quy tắc thủy động học, bọt khí & khói
+│   │   ├── 2D_physics_thermal_weathering.md   # Quy tắc bức xạ nhiệt, đóng băng & rỉ sét
+│   │   └── 2D_physics_fracture_destruction.md # Quy tắc nứt gỗ, móp kim loại & vỡ kính
 │   └── skills/
 │       ├── file-structure/
 │       │   └── SKILL.md               # Kỹ năng tổ chức thư mục

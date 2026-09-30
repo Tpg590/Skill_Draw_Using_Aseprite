@@ -1,0 +1,118 @@
+import os
+import sys
+sys.path.insert(0, os.path.dirname(__file__))
+from generate_perfect_lantern import perfect_lantern_frames, CODE_MAP, W, H
+
+def generate_lua():
+    lua_lines = []
+    lua_lines.append('-- scripts/swinging_lantern_48.lua')
+    lua_lines.append('local width = 48')
+    lua_lines.append('local height = 48')
+    lua_lines.append('local fps = 6')
+    lua_lines.append('local frameDuration = 1.0 / fps')
+    lua_lines.append('')
+    lua_lines.append('local sprite = Sprite(width, height, ColorMode.RGB)')
+    lua_lines.append('local layer = sprite.layers[1]')
+    lua_lines.append('layer.name = "Main"')
+    lua_lines.append('sprite.frames[1].duration = frameDuration')
+    lua_lines.append('local image = sprite.cels[1].image')
+    lua_lines.append('')
+    lua_lines.append('-- 1. Palette: "." là trong suốt, "S" là bóng đổ ngược chiều (Alpha 140)')
+    lua_lines.append('local PALETTE = {')
+    lua_lines.append('    ["."] = nil,')
+    lua_lines.append('    ["#"] = "#100e14", -- Viền sẫm Terraria')
+    lua_lines.append('    ["S"] = "#120e18", -- Soft cast shadow (Alpha 140)')
+    lua_lines.append('    ["A"] = "#7c8494", -- F1: Đá phiến sáng (Stone highlight)')
+    lua_lines.append('    ["B"] = "#4a505e", -- F2: Đá phiến nền (Stone midtone)')
+    lua_lines.append('    ["C"] = "#262a34", -- F3: Đá phiến tối (Stone shadow)')
+    lua_lines.append('    ["D"] = "#9aa0b0", -- I1: Sắt lạnh sáng (Iron highlight)')
+    lua_lines.append('    ["E"] = "#545a68", -- I2: Sắt lạnh nền (Iron midtone)')
+    lua_lines.append('    ["F"] = "#2a2e38", -- I3: Sắt lạnh tối (Iron shadow)')
+    lua_lines.append('    ["G"] = "#e0b450", -- O1: Hắt sáng OSL vàng rực (OSL highlight)')
+    lua_lines.append('    ["H"] = "#8a6428", -- O2: Hắt sáng OSL vàng ấm (OSL midtone)')
+    lua_lines.append('    ["J"] = "#ffea90", -- L1: Lõi lửa vàng trắng (Core flame)')
+    lua_lines.append('    ["K"] = "#fca820", -- L2: Ánh sáng đèn vàng rực (Lantern glow)')
+    lua_lines.append('    ["L"] = "#d05a10", -- L3: Ngọn lửa cam sẫm (Deep orange flame)')
+    lua_lines.append('    ["M"] = "#b4dce6"  -- G1: Phản quang kính đèn (Glass specular)')
+    lua_lines.append('}')
+    lua_lines.append('')
+
+    # Render function
+    lua_lines.append('-- 2. Render function')
+    lua_lines.append('local function renderGrid(img, gridData, pal)')
+    lua_lines.append('    for y = 1, #gridData do')
+    lua_lines.append('        local line = gridData[y]')
+    lua_lines.append('        for x = 1, #line do')
+    lua_lines.append('            local char = line:sub(x, x)')
+    lua_lines.append('            local hex = pal[char]')
+    lua_lines.append('            if hex then')
+    lua_lines.append('                local h = hex:gsub("#", "")')
+    lua_lines.append('                local r = tonumber(h:sub(1, 2), 16) or 0')
+    lua_lines.append('                local g = tonumber(h:sub(3, 4), 16) or 0')
+    lua_lines.append('                local b = tonumber(h:sub(5, 6), 16) or 0')
+    lua_lines.append('                local a = (char == "S") and 140 or 255')
+    lua_lines.append('                img:drawPixel(x - 1, y - 1, Color{ r = r, g = g, b = b, a = a })')
+    lua_lines.append('            else')
+    lua_lines.append('                img:drawPixel(x - 1, y - 1, Color{ r = 0, g = 0, b = 0, a = 0 })')
+    lua_lines.append('            end')
+    lua_lines.append('        end')
+    lua_lines.append('    end')
+    lua_lines.append('end')
+    lua_lines.append('')
+
+    # Grids for frames 1 to 4
+    for f_idx, fr in enumerate(perfect_lantern_frames):
+        grid_var = f"f{f_idx + 1}_grid"
+        lua_lines.append(f"-- 3.{f_idx + 1}. Grid Frame {f_idx + 1}")
+        lua_lines.append(f"local {grid_var} = {{")
+        for y in range(H):
+            row_chars = "".join(CODE_MAP[fr[y][x]] for x in range(W))
+            lua_lines.append(f'    "{row_chars}",')
+        lua_lines.append("}")
+        lua_lines.append("")
+
+    # Draw frames
+    lua_lines.append('-- 4. Render các frame hoạt ảnh')
+    lua_lines.append('renderGrid(image, f1_grid, PALETTE)')
+    lua_lines.append('')
+    lua_lines.append('local frame2 = sprite:newFrame()')
+    lua_lines.append('frame2.duration = frameDuration')
+    lua_lines.append('local img2 = layer:cel(2).image')
+    lua_lines.append('renderGrid(img2, f2_grid, PALETTE)')
+    lua_lines.append('')
+    lua_lines.append('local frame3 = sprite:newFrame()')
+    lua_lines.append('frame3.duration = frameDuration')
+    lua_lines.append('local img3 = layer:cel(3).image')
+    lua_lines.append('renderGrid(img3, f3_grid, PALETTE)')
+    lua_lines.append('')
+    lua_lines.append('local frame4 = sprite:newFrame()')
+    lua_lines.append('frame4.duration = frameDuration')
+    lua_lines.append('local img4 = layer:cel(4).image')
+    lua_lines.append('renderGrid(img4, f4_grid, PALETTE)')
+    lua_lines.append('')
+
+    # Export
+    lua_lines.append('-- 5. Xuất file CLI (Tuân thủ cấu trúc thư mục chuẩn)')
+    lua_lines.append('sprite:saveCopyAs("output/aseprite/swinging_lantern_48.aseprite")')
+    lua_lines.append('sprite:saveCopyAs("output/gif/swinging_lantern_48.gif")')
+    lua_lines.append('')
+    lua_lines.append('local totalFrames = #sprite.frames')
+    lua_lines.append('local sheetSprite = Sprite(width * totalFrames, height, ColorMode.RGB)')
+    lua_lines.append('local sheetImage = sheetSprite.cels[1].image')
+    lua_lines.append('for i = 1, totalFrames do')
+    lua_lines.append('    local frameCel = layer:cel(i)')
+    lua_lines.append('    if frameCel then')
+    lua_lines.append('        sheetImage:drawImage(frameCel.image, Point((i - 1) * width, 0))')
+    lua_lines.append('    end')
+    lua_lines.append('end')
+    lua_lines.append('sheetSprite:saveCopyAs("output/Sheet/swinging_lantern_48_sheet.png")')
+    lua_lines.append('sheetSprite:close()')
+    lua_lines.append('')
+
+    output_path = "scripts/swinging_lantern_48.lua"
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lua_lines))
+    print(f"Generated {output_path} successfully ({len(lua_lines)} lines).")
+
+if __name__ == "__main__":
+    generate_lua()
