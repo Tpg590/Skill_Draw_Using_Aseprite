@@ -7,7 +7,7 @@
 ## 📑 Mục Lục Giới Thiệu
 1. [Vấn Đề & Triết Lý Phát Triển](#-1-vấn-đề--triết-lý-phát-triển)
 2. [Kiến Trúc 4 Tầng Của Hệ Thống](#-2-kiến-trúc-4-tầng-của-hệ-thống)
-3. [7 Bộ Quy Chuẩn Vật Lý & Mỹ Thuật (Rules Engine)](#-3-7-bộ-quy-chuẩn-vật-lý--mỹ-thuật-rules-engine)
+3. [9 Bộ Quy Chuẩn Vật Lý & Mỹ Thuật (Rules Engine)](#-3-9-bộ-quy-chuẩn-vật-lý--mỹ-thuật-rules-engine)
 4. [9 Kỹ Năng Hoạt Họa & Giải Phẫu Chuyên Biệt (Skills Vault)](#-4-9-kỹ-năng-hoạt-họa--giải-phẫu-chuyên-biệt-skills-vault)
 5. [Chuẩn Hóa Bảng Màu & Độc Quyền Bóng Đất (Palette & Shadow)](#-5-chuẩn-hóa-bảng-màu--độc-quyền-bóng-đất-palette--shadow)
 6. [Cấu Trúc Thư Mục Toàn Dự Án](#-6-cấu-trúc-thư-mục-toàn-dự-án)
@@ -40,11 +40,13 @@
 │ 1. RULES (Cơ chế cưỡng chế vật lý & thẩm mỹ không thể vi phạm)        │
 │    ├── pixel_art_rules.md              (Core Aesthetic & Tỷ lệ chiếm)  │
 │    ├── 2D_physics_spatial_perspective  (Phối cảnh 3/4, bệ đá, hướng +Y)│
+│    ├── 2D_physics_optics_lighting      (Quang học, OSL, bóng 180°)     │
 │    ├── 2D_physics_kinematics_motion    (Quán tính, bóng Z, pha so le)  │
 │    ├── 2D_physics_impact_mechanics     (Squash & Stretch, bản lề nắp)  │
-│    ├── 2D_physics_fluid_gas_vfx        (Meniscus, thắt eo, khói, bọt)  │
 │    ├── 2D_physics_material_rendering   (Terminator SSS, kim loại, vảy) │
-│    └── 2D_physics_thermal_weathering   (Quang phổ nhiệt, rỉ sét, băng) │
+│    ├── 2D_physics_fluid_gas_vfx        (Meniscus, thắt eo, khói, bọt)  │
+│    ├── 2D_physics_thermal_weathering   (Quang phổ nhiệt, rỉ sét, băng) │
+│    └── 2D_physics_fracture_destruction (Nứt gỗ, rãnh đá, móp kim loại) │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     ▼
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -75,19 +77,21 @@
 
 ---
 
-## ⚖️ 3. 7 Bộ Quy Chuẩn Vật Lý & Mỹ Thuật (Rules Engine)
+## ⚖️ 3. 9 Bộ Quy Chuẩn Vật Lý & Mỹ Thuật (Rules Engine)
 
-Mọi pixel art sinh ra trong hệ thống đều phải tuân thủ nghiêm ngặt 7 bộ luật (nằm trong thư mục `.agents/rules/`):
+Mọi pixel art sinh ra trong hệ thống đều phải tuân thủ nghiêm ngặt 9 bộ quy chuẩn (nằm trong thư mục `.agents/rules/`):
 
 | Tên Bộ Quy Chuẩn | Phạm Vi Kiểm Soát & Nguyên Tắc Cưỡng Chế Cốt Lõi |
 | :--- | :--- |
 | [pixel_art_rules.md](.agents/rules/pixel_art_rules.md) | **Mỹ thuật cốt lõi:** Bounding Box vật thể chiếm `50%–75%` canvas; Tuyệt đối cấm Banding & Dithering rải hạt; Mái/nắp nhô rộng hơn thân 1–2px (Overhang); Nhịp bo góc đều `1-2-1` không jaggies; Khóa trục tĩnh $Y_{floor}$. |
 | [2D_physics_spatial_perspective.md](.agents/rules/2D_physics_spatial_perspective.md) | **Hình học không gian Top-Down 3/4:** Mặt đứng nén `85%–90%`; Hướng vươn ra trước mặt là $+Y$ (hướng chúc xuống); Đáy bục tròn/trụ cong vồng $+Y$; Bóng sàn của vật thể bay là hình ellipse dẹt; Lòng sâu 3D có bóng xiên. |
+| [2D_physics_optics_lighting.md](.agents/rules/2D_physics_optics_lighting.md) | **Quang học & Ánh sáng Top-Down 3/4:** Nguồn sáng tự thân hắt sáng OSL; Vành đỡ hắt sáng Rim Lighting; Bóng đổ sàn ngược 180° với nguồn sáng; Khóa vệt phản quang Specular drift trong lòng thể tích; Phản chiếu mặt nước Inverted-Y nén dẹt. |
 | [2D_physics_kinematics_motion.md](.agents/rules/2D_physics_kinematics_motion.md) | **Động lực học & Chuyển động:** Cao độ trục Z phải khóa chết hàng bóng tiếp đất `S` trên sàn; Tiếp đất có hoãn xung (Landing Squash); Mắt xích trễ pha chữ S; Bọ máy 4 chân bước so le chéo góc; Loop animation có pha cooldown mượt. |
 | [2D_physics_impact_mechanics.md](.agents/rules/2D_physics_impact_mechanics.md) | **Va chạm & Biến dạng đàn hồi:** Bảo toàn thể tích nén giãn $\Delta W \approx -\Delta H \times (W_0/H_0)$; Bản lề nắp mở nén phối cảnh $H_{mở} \approx 40\%-50\% H_{đóng}$; Phụ kiện (khóa, then cài) bảo toàn liên tục không biến mất; Tâm nổ vỡ nằm ở đáy tiếp sàn. |
-| [2D_physics_fluid_gas_vfx.md](.agents/rules/2D_physics_fluid_gas_vfx.md) | **Thủy động & Khí động học:** Mặt thoáng Meniscus nghiêng ngược hướng bình; Rỉ chảy phải thắt eo (Neck Pinching) trước khi tách giọt; Gợn sóng nước rỗng ruột 1px; Slime nghỉ hình bánh bao Gumdrop ($H \approx 70\%-80\% W$); Tia sét rãnh zíc-zắc fractal. |
 | [2D_physics_material_rendering.md](.agents/rules/2D_physics_material_rendering.md) | **Chất liệu & Quang học bề mặt:** Kim loại có highlight gắt `#FFFFFF`; Đường Terminator chất hữu cơ/slime có dải bão hòa màu cực đỉnh (Saturation Peak); Pha kéo giãn mỏng trong suốt, pha nén sẫm màu; Vệt sáng dẹt theo trục kéo. |
+| [2D_physics_fluid_gas_vfx.md](.agents/rules/2D_physics_fluid_gas_vfx.md) | **Thủy động & Khí động học:** Mặt thoáng Meniscus nghiêng ngược hướng bình; Rỉ chảy phải thắt eo (Neck Pinching) trước khi tách giọt; Gợn sóng nước rỗng ruột 1px; Slime nghỉ hình bánh bao Gumdrop ($H \approx 70\%-80\% W$); Tia sét rãnh zíc-zắc fractal. |
 | [2D_physics_thermal_weathering.md](.agents/rules/2D_physics_thermal_weathering.md) | **Nhiệt độ & Phong hóa:** Bức xạ quang phổ nhiệt Blackbody (Trắng vàng $\rightarrow$ Vàng cam $\rightarrow$ Đỏ mận $\rightarrow$ Than đen); Băng đóng gai nhọn chóp trắng; Rỉ sét bám tụ rãnh nối và chân đế ẩm; Bào mòn xói lở mặt đón gió. |
+| [2D_physics_fracture_destruction.md](.agents/rules/2D_physics_fracture_destruction.md) | **Cơ học nứt gãy & Biến dạng:** Thớ nứt gỗ dọc theo vân có dăm xơ 1px; Rãnh nứt đá zíc-zắc 1-2-1 cấm dithering; Mảnh kính vỡ tam giác nhọn có chóp trắng; Khuyết móp đường biên (Perimeter Notch); Kim loại dày bị móp méo lõm khối. |
 
 ---
 
@@ -129,14 +133,16 @@ Hệ thống quy định nghiêm ngặt về bảng ánh xạ Palette để trá
 ```text
 Skill_Trainning/
 ├── .agents/
-│   ├── rules/                          # 7 Bộ quy chuẩn vật lý & thẩm mỹ bắt buộc
+│   ├── rules/                          # 9 Bộ quy chuẩn vật lý & thẩm mỹ bắt buộc
 │   │   ├── pixel_art_rules.md
 │   │   ├── 2D_physics_spatial_perspective.md
+│   │   ├── 2D_physics_optics_lighting.md
 │   │   ├── 2D_physics_kinematics_motion.md
 │   │   ├── 2D_physics_impact_mechanics.md
-│   │   ├── 2D_physics_fluid_gas_vfx.md
 │   │   ├── 2D_physics_material_rendering.md
-│   │   └── 2D_physics_thermal_weathering.md
+│   │   ├── 2D_physics_fluid_gas_vfx.md
+│   │   ├── 2D_physics_thermal_weathering.md
+│   │   └── 2D_physics_fracture_destruction.md
 │   └── skills/                         # 9 Thư mục kỹ năng chuyên sâu
 │       ├── topdown-tilemap-architect/
 │       ├── humanoid-character-sprite/
@@ -170,5 +176,5 @@ Nội dung trong [Instruction.md](Instruction.md) bao gồm:
 * Quy trình chi tiết 4 bước từ Prompt đến Thành phẩm.
 * Hướng dẫn đổi đường dẫn Aseprite / chuyển sang LibreSprite trong [run_draw.bat](run_draw.bat).
 * Hướng dẫn phương án render bằng Python thuần (không cần cài phần mềm đồ họa).
-* Thư viện 8 Prompt mẫu tối ưu cho Hiệp sĩ, Sói, Chim, Bò sát, Slime, Búa sấm sét, Vách đá...
+* Thư viện 9 Prompt mẫu tối ưu cho Hiệp sĩ, Sói, Chim, Bò sát, Slime, Búa sấm sét, Lửa băng, Vách đá...
 * Bảng tra cứu và xử lý mọi sự cố thường gặp.

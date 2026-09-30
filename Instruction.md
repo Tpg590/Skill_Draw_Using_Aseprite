@@ -321,6 +321,24 @@ Búa giáng xuống tạo tâm nứt vỡ chân chim tại điểm tiếp sàn Y
 
 ---
 
+### ❄️ Mẫu 9: Nhiệt Độ, Lửa & Băng Giá (Kích hoạt `2D_physics_thermal_weathering`)
+```markdown
+Tạo asset pixel art bằng script Lua cho Aseprite theo đúng các quy chuẩn hệ thống:
+
+**Thông số kỹ thuật bắt buộc:**
+* Grid Size: 48x48
+* Art Style: FreeStyle
+* Asset Type: Individual Sprite
+* Output Type: Animation
+* Animation FPS: 8
+
+**Mô tả ý tưởng:**
+Một khối lõi cổ thạch ma thuật tỏa năng lượng nhiệt và băng giá (Elemental Frost-Fire Core):
+Lõi trung tâm rực lửa tuân thủ dải Blackbody (Trắng vàng #FFFFA0 -> Vàng cam #FF8800 -> Đỏ mận #8B1010 -> Than đen #1A0808) và hắt sáng nhiệt OSL. Nửa đối diện kết tinh gai băng nhọn (Needle Frost) 1-2px viền chóp trắng. Chân bệ đá tiếp sàn có rỉ sét cam sần sùi bám tụ rãnh nứt và bóng tiếp đất S.
+```
+
+---
+
 ## 🛠️ 4. Xử Lý Sự Cố Thường Gặp (Troubleshooting)
 
 ### 1. Lỗi: `'aseprite' is not recognized as an internal or external command`
@@ -340,18 +358,24 @@ Búa giáng xuống tạo tâm nứt vỡ chân chim tại điểm tiếp sàn Y
 * **Cách sửa**: File `run_draw.bat` đã tích hợp lệnh tự động tạo các thư mục con `output\aseprite`, `output\gif`, `output\Sheet`. Hãy đảm bảo bạn chạy file batch từ đúng thư mục gốc dự án.
 
 ### 4. Lỗi: Aseprite không xuất Spritesheet hoặc GIF
-* **Nguyên nhân**: Script Lua thiếu khối lệnh lưu trữ ở cuối file.
-* **Cách sửa**: Mọi file script chuẩn đều phải chứa đoạn mã xuất 3 thư mục theo quy định của [aseprite-lua-generator](.agents/skills/aseprite-lua-generator/SKILL.md):
+* **Nguyên nhân**: Script Lua thiếu khối lệnh lưu trữ ở cuối file hoặc gọi phương thức không tương thích trên một số phiên bản headless.
+* **Cách sửa**: Mọi file script chuẩn đều phải chứa đoạn mã xuất 3 thư mục sử dụng đối tượng `Sprite` theo quy định của [aseprite-lua-generator](.agents/skills/aseprite-lua-generator/SKILL.md):
 ```lua
 sprite:saveCopyAs("output/aseprite/<ten_file>.aseprite")
 if #sprite.frames > 1 then
     sprite:saveCopyAs("output/gif/<ten_file>.gif")
     local totalFrames = #sprite.frames
-    local sheetImage = Image(width * totalFrames, height, ColorMode.RGB)
-    sheetImage:clear()
+    local sheetSprite = Sprite(width * totalFrames, height, ColorMode.RGB)
+    local sheetImage = sheetSprite.cels[1].image
     for i = 1, totalFrames do
-        sheetImage:drawImage(sprite.cels[i].image, Point((i - 1) * width, 0))
+        local frameCel = layer:cel(i)
+        if frameCel then
+            sheetImage:drawImage(frameCel.image, Point((i - 1) * width, 0))
+        end
     end
-    sheetImage:saveAs("output/Sheet/<ten_file>_sheet.png")
+    sheetSprite:saveCopyAs("output/Sheet/<ten_file>_sheet.png")
+    sheetSprite:close()
+else
+    sprite:saveCopyAs("output/Sheet/<ten_file>.png")
 end
 ```
