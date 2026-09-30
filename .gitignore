@@ -18,3 +18,8 @@ $RECYCLE.BIN/
 # User-specific / Local configs
 .vscode/
 .idea/
+
+# Project generated folders & test files
+test/
+python/
+output/
